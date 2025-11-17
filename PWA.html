@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6B6B">
+    <meta name="description" content="Заказ еды онлайн">
+    <link rel="manifest" href="manifest.json">
+    <title>FoodHub - Доставка еды</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(254, 202, 87, 0.05) 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            padding: 20px;
+            border-radius: 0 0 32px 32px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .search-box {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .categories {
+            padding: 0 16px 16px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            background: white;
+            font-size: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 0 16px;
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .menu-item:active {
+            transform: scale(0.95);
+        }
+
+        .menu-item-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .menu-item-rating {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .menu-item-info {
+            padding: 12px;
+        }
+
+        .menu-item-name {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .menu-item-description {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .menu-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+
+        .add-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .cart-list {
+            padding: 16px;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            color: #666;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 8px;
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+
+        .cart-item-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            color: #FF6B6B;
+        }
+
+        .cart-total {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 24px;
+            border-radius: 32px 32px 0 0;
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-total-label {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .cart-total-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: #FF6B6B;
+        }
+
+        .nav-item-icon {
+            font-size: 24px;
+            position: relative;
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #FF6B6B;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .nav-item-label {
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #FF6B6B;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-cancel {
+            border: 2px solid #FF6B6B;
+            background: white;
+            color: #FF6B6B;
+        }
+
+        .modal-btn-submit {
+            border: none;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            color: #999;
+        }
+
+        .admin-orders {
+            padding: 16px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .order-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .order-info {
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .order-customer {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .order-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .status-pending { background: rgba(255, 167, 38, 0.2); color: #FFA726; }
+        .status-confirmed { background: rgba(66, 165, 245, 0.2); color: #42A5F5; }
+        .status-preparing { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
+        .status-ready { background: rgba(102, 187, 106, 0.2); color: #66BB6A; }
+        .status-delivered { background: rgba(120, 144, 156, 0.2); color: #78909C; }
+
+        .order-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .status-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .status-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            background: #f0f0f0;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .status-btn.active {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Страница меню -->
+    <div id="menuPage" class="page active">
+        <div class="header">
+            <div class="header-top">
+                <div class="header-title">
+                    <p>Привет! 👋</p>
+                    <h1>Что будем заказывать?</h1>
+                </div>
+                <div class="notification-icon">🔔</div>
+            </div>
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" placeholder="Поиск блюд..." id="searchInput">
+            </div>
+        </div>
+
+        <div class="categories" id="categories"></div>
+        <div class="menu-grid" id="menuGrid"></div>
+    </div>
+
+    <!-- Страница корзины -->
+    <div id="cartPage" class="page">
+        <div class="header">
+            <div class="header-top">
+                <div class="header-title">
+                    <h1>Моя корзина</h1>
+                    <p id="cartCount">0 товаров</p>
+                </div>
+            </div>
+        </div>
+        <div class="cart-list" id="cartList"></div>
+        <div class="cart-total hidden" id="cartTotal">
+            <div class="cart-total-row">
+                <div>
+                    <div class="cart-total-label">Итого:</div>
+                    <div class="cart-total-amount" id="totalAmount">0 ₽</div>
+                </div>
+                <div style="font-size: 48px;">🛍️</div>
+            </div>
+            <button class="checkout-btn" onclick="showCheckoutModal()">
+                Оформить заказ
+                <span>→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Страница заказов (админка) -->
+    <div id="ordersPage" class="page">
+        <div class="header">
+            <div class="header-top">
+                <div class="header-title">
+                    <h1>Панель управления</h1>
+                    <p id="ordersCount">Всего заказов: 0</p>
+                </div>
+                <div class="notification-icon">📊</div>
+            </div>
+        </div>
+        <div class="admin-orders" id="ordersList"></div>
+    </div>
+
+    <!-- Нижняя навигация -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('menu')">
+            <div class="nav-item-icon">🏠</div>
+            <div class="nav-item-label">Главная</div>
+        </div>
+        <div class="nav-item" onclick="showPage('cart')">
+            <div class="nav-item-icon">
+                🛒
+                <span class="nav-badge hidden" id="cartBadge">0</span>
+            </div>
+            <div class="nav-item-label">Корзина</div>
+        </div>
+        <div class="nav-item" onclick="showPage('orders')">
+            <div class="nav-item-icon">📋</div>
+            <div class="nav-item-label">Заказы</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно оформления заказа -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">🍔</div>
+                <div class="modal-title">Оформление заказа</div>
+                <div class="modal-subtitle">Заполните данные для доставки</div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="customerName" placeholder="Ваше имя">
+            </div>
+            <div class="input-group">
+                <input type="tel" id="customerPhone" placeholder="Телефон">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeCheckoutModal()">Отмена</button>
+                <button class="modal-btn modal-btn-submit" onclick="placeOrder()">Заказать</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные меню
+        const menuItems = [
+            {
+                id: 1,
+                name: 'Чизбургер Премиум',
+                price: 450,
+                category: 'Бургеры',
+                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300',
+                description: 'Двойная говядина, чеддер, соус BBQ',
+                rating: 4.8
+            },
+            {
+                id: 2,
+                name: 'Биг Бургер',
+                price: 520,
+                category: 'Бургеры',
+                image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=300',
+                description: 'Тройная котлета, бекон, луковые кольца',
+                rating: 4.9
+            },
+            {
+                id: 3,
+                name: 'Филадельфия Классик',
+                price: 480,
+                category: 'Суши',
+                image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300',
+                description: 'Лосось, сливочный сыр, авокадо',
+                rating: 4.7
+            },
+            {
+                id: 4,
+                name: 'Запеченный ролл',
+                price: 520,
+                category: 'Суши',
+                image: 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=300',
+                description: 'Лосось, угорь, острый соус',
+                rating: 4.9
+            },
+            {
+                id: 5,
+                name: 'Маргарита XXL',
+                price: 650,
+                category: 'Пицца',
+                image: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=300',
+                description: 'Моцарелла, томаты, базилик, 35см',
+                rating: 4.6
+            },
+            {
+                id: 6,
+                name: 'Мясная Бомба',
+                price: 750,
+                category: 'Пицца',
+                image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300',
+                description: 'Говядина, курица, бекон, колбаса',
+                rating: 4.9
+            },
+            {
+                id: 7,
+                name: 'Капучино Deluxe',
+                price: 220,
+                category: 'Кофе',
+                image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300',
+                description: 'Двойной эспрессо, молочная пенка',
+                rating: 4.8
+            },
+            {
+                id: 8,
+                name: 'Айс Латте',
+                price: 250,
+                category: 'Кофе',
+                image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=300',
+                description: 'Эспрессо, молоко, лёд, карамель',
+                rating: 4.7
+            },
+            {
+                id: 9,
+                name: 'Милкшейк Орео',
+                price: 280,
+                category: 'Напитки',
+                image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=300',
+                description: 'Ванильное мороженое, печенье Орео',
+                rating: 4.9
+            },
+            {
+                id: 10,
+                name: 'Тирамису',
+                price: 350,
+                category: 'Десерты',
+                image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=300',
+                description: 'Классический итальянский десерт',
+                rating: 4.8
+            },
+            {
+                id: 11,
+                name: 'Чизкейк NY',
+                price: 320,
+                category: 'Десерты',
+                image: 'https://images.unsplash.com/photo-1533134242820-b6c38c15a6a4?w=300',
+                description: 'Нью-Йоркский чизкейк с ягодами',
+                rating: 4.9
+            }
+        ];
+
+        // Состояние приложения
+        let cart = [];
+        let orders = [];
+        let currentCategory = 'Все';
+        const categories = ['Все', 'Бургеры', 'Суши', 'Пицца', 'Кофе', 'Напитки', 'Десерты'];
+
+        // Инициализация
+        function init() {
+            renderCategories();
+            renderMenu();
+            loadFromStorage();
+            updateCartUI();
+            updateOrdersUI();
+        }
+
+        // Сохранение в localStorage
+        function saveToStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+
+        function loadFromStorage() {
+            const savedCart = localStorage.getItem('cart');
+            const savedOrders = localStorage.getItem('orders');
+            if (savedCart) cart = JSON.parse(savedCart);
+            if (savedOrders) orders = JSON.parse(savedOrders);
+        }
+
+        // Отрисовка категорий
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = categories.map(cat => `
+                <button class="category-btn ${cat === currentCategory ? 'active' : ''}" 
+                        onclick="selectCategory('${cat}')">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        // Выбор категории
+        function selectCategory(category) {
+            currentCategory = category;
+            renderCategories();
+            renderMenu();
+        }
+
+        // Отрисовка меню
+        function renderMenu() {
+            const container = document.getElementById('menuGrid');
+            const filtered = currentCategory === 'Все' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === currentCategory);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div><div class="empty-title">Нет блюд</div></div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => `
+                <div class="menu-item" onclick="addToCart(${item.id})">
+                    <div style="position: relative;">
+                        <img src="${item.image}" alt="${item.name}" class="menu-item-image">
+                        <div class="menu-item-rating">⭐ ${item.rating}</div>
+                    </div>
+                    <div class="menu-item-info">
+                        <div class="menu-item-name">${item.name}</div>
+                        <div class="menu-item-description">${item.description}</div>
+                        <div class="menu-item-footer">
+                            <div class="menu-item-price">${item.price} ₽</div>
+                            <button class="add-btn">+</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Добавить в корзину
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            const existingItem = cart.find(c => c.id === itemId);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+
+            saveToStorage();
+            updateCartUI();
+            showNotification('✅ Добавлено в корзину');
+        }
+
+        // Обновить UI корзины
+        function updateCartUI() {
+            const cartList = document.getElementById('cartList');
+            const cartBadge = document.getElementById('cartBadge');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            const totalAmount = document.getElementById('totalAmount');
+
+            const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            // Обновить бейдж
+            if (itemCount > 0) {
+                cartBadge.textContent = itemCount;
+                cartBadge.classList.remove('hidden');
+            } else {
+                cartBadge.classList.add('hidden');
+            }
+
+            cartCount.textContent = `${itemCount} ${itemCount === 1 ? 'товар' : 'товара'}`;
+
+            // Отрисовать корзину
+            if (cart.length === 0) {
+                cartList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🛒</div>
+                        <div class="empty-title">Корзина пуста</div>
+                        <div class="empty-text">Добавьте вкусные блюда из меню</div>
+                    </div>
+                `;
+                cartTotal.classList.add('hidden');
+            } else {
+                cartList.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price} ₽</div>
+                            <div class="cart-item-controls">
+                                <button class="cart-item-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                                <span style="font-weight: bold;">${item.quantity}</span>
+                                <button class="cart-item-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                cartTotal.classList.remove('hidden');
+            }
+
+            totalAmount.textContent = `${total} ₽`;
+        }
+
+        // Изменить количество
+        function updateQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            saveToStorage();
+            updateCartUI();
+        }
+
+        // Показать модальное окно оформления
+        function showCheckoutModal() {
+            if (cart.length === 0) return;
+            document.getElementById('checkoutModal').classList.add('active');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        // Оформить заказ
+        function placeOrder() {
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+
+            if (!name || !phone) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const order = {
+                id: Date.now(),
+                customer: { name, phone },
+                items: [...cart],
+                total: total,
+                date: new Date().toISOString(),
+                status: 'pending'
+            };
+
+            orders.push(order);
+            
+            // Отправить в WhatsApp
+            sendToWhatsApp(order);
+
+            // Очистить корзину
+            cart = [];
+            saveToStorage();
+            updateCartUI();
+            updateOrdersUI();
+            
+            closeCheckoutModal();
+            showNotification('✅ Заказ успешно оформлен!');
+            
+            // Очистить поля
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+        }
+
+        // Отправить в WhatsApp
+        function sendToWhatsApp(order) {
+            let message = `🍕 *Новый заказ #${order.id}*\n\n`;
+            message += `👤 Клиент: ${order.customer.name}\n`;
+            message += `📞 Телефон: ${order.customer.phone}\n\n`;
+            message += `📋 *Заказ:*\n`;
+            
+            order.items.forEach(item => {
+                message += `• ${item.name} x${item.quantity} - ${item.price * item.quantity}₽\n`;
+            });
+            
+            message += `\n💰 *Итого: ${order.total}₽*`;
+            
+            const phoneNumber = '79280165516'; // Замените на номер ресторана
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // Отправить уведомление клиенту
+        function sendStatusUpdate(order, status) {
+            let message = '';
+            
+            switch (status) {
+                case 'confirmed':
+                    message = `✅ *Ваш заказ #${order.id} подтвержден!*\n\n`;
+                    message += 'Начинаем готовить ваш заказ.\n';
+                    message += 'Ожидайте примерно 30-40 минут.';
+                    break;
+                case 'preparing':
+                    message = `👨‍🍳 *Ваш заказ #${order.id} готовится!*\n\n`;
+                    message += 'Наши повара уже приступили к приготовлению.\n';
+                    message += 'Скоро всё будет готово!';
+                    break;
+                case 'ready':
+                    message = `🎉 *Ваш заказ #${order.id} готов!*\n\n`;
+                    message += 'Курьер уже в пути к вам.\n';
+                    message += 'Ожидайте доставку в течение 15 минут.';
+                    break;
+                case 'delivered':
+                    message = `✨ *Заказ #${order.id} доставлен!*\n\n`;
+                    message += 'Спасибо за заказ!\n';
+                    message += 'Приятного аппетита! 😊';
+                    break;
+                default:
+                    return;
+            }
+            
+            message += `\n\n💰 Сумма: ${order.total}₽`;
+            
+            let phone = order.customer.phone.replace(/\D/g, '');
+            if (!phone.startsWith('7')) {
+                phone = '7' + phone;
+            }
+            
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // Обновить статус заказа
+        function updateOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                const oldStatus = order.status;
+                order.status = newStatus;
+                saveToStorage();
+                updateOrdersUI();
+                
+                // Отправить уведомление клиенту
+                if (oldStatus !== newStatus && newStatus !== 'pending') {
+                    sendStatusUpdate(order, newStatus);
+                }
+            }
+        }
+
+        // Отрисовать заказы
+        function updateOrdersUI() {
+            const ordersList = document.getElementById('ordersList');
+            const ordersCount = document.getElementById('ordersCount');
+            
+            ordersCount.textContent = `Всего заказов: ${orders.length}`;
+
+            if (orders.length === 0) {
+                ordersList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <div class="empty-title">Пока нет заказов</div>
+                        <div class="empty-text">Новые заказы появятся здесь</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusLabels = {
+                pending: 'Новый',
+                confirmed: 'Подтвержден',
+                preparing: 'Готовится',
+                ready: 'Готов',
+                delivered: 'Доставлен'
+            };
+
+            ordersList.innerHTML = [...orders].reverse().map((order, index) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-number">#${orders.length - index}</div>
+                        <div class="order-info">
+                            <div class="order-customer">${order.customer.name}</div>
+                            <div class="order-total">${order.total} ₽</div>
+                            <div class="order-status status-${order.status}">
+                                ${statusLabels[order.status]}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-details">
+                        <div style="margin-bottom: 8px;">
+                            📞 ${order.customer.phone}
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            🕐 ${new Date(order.date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        <div style="font-weight: bold; margin-bottom: 8px;">Состав заказа:</div>
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.name} × ${item.quantity}</span>
+                                <span>${item.price * item.quantity} ₽</span>
+                            </div>
+                        `).join('')}
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0;">
+                            <strong>Изменить статус:</strong>
+                        </div>
+                        <div class="status-buttons">
+                            <button class="status-btn ${order.status === 'pending' ? 'active' : ''}" 
+                                    onclick="updateOrderStatus(${order.id}, 'pending')">
+                                🕐 Новый
+                            </button>
+                            <button class="status-btn ${order.status === 'confirmed' ? 'active' : ''}" 
+                                    onclick="updateOrderStatus(${order.id}, 'confirmed')">
+                                ✅ Подтвержден
+                            </button>
+                            <button class="status-btn ${order.status === 'preparing' ? 'active' : ''}" 
+                                    onclick="updateOrderStatus(${order.id}, 'preparing')">
+                                👨‍🍳 Готовится
+                            </button>
+                            <button class="status-btn ${order.status === 'ready' ? 'active' : ''}" 
+                                    onclick="updateOrderStatus(${order.id}, 'ready')">
+                                🎉 Готов
+                            </button>
+                            <button class="status-btn ${order.status === 'delivered' ? 'active' : ''}" 
+                                    onclick="updateOrderStatus(${order.id}, 'delivered')">
+                                ✨ Доставлен
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Переключение страниц
+        function showPage(pageName) {
+            // Скрыть все страницы
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Убрать активный класс у всех nav-item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Показать нужную страницу
+            const pages = {
+                menu: 'menuPage',
+                cart: 'cartPage',
+                orders: 'ordersPage'
+            };
+
+            document.getElementById(pages[pageName]).classList.add('active');
+
+            // Активировать соответствующий nav-item
+            const navItems = document.querySelectorAll('.nav-item');
+            const navIndex = { menu: 0, cart: 1, orders: 2 };
+            navItems[navIndex[pageName]].classList.add('active');
+
+            // Обновить UI при переходе
+            if (pageName === 'cart') {
+                updateCartUI();
+            } else if (pageName === 'orders') {
+                updateOrdersUI();
+            }
+        }
+
+        // Уведомление
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                z-index: 9999;
+                font-weight: bold;
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Добавить стили для анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Поиск
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = menuItems.filter(item => 
+                item.name.toLowerCase().includes(query) || 
+                item.description.toLowerCase().includes(query)
+            );
+            
+            const container = document.getElementById('menuGrid');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">Ничего не найдено</div>
+                        <div class="empty-text">Попробуйте другой запрос</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = filtered.map(item => `
+                    <div class="menu-item" onclick="addToCart(${item.id})">
+                        <div style="position: relative;">
+                            <img src="${item.image}" alt="${item.name}" class="menu-item-image">
+                            <div class="menu-item-rating">⭐ ${item.rating}</div>
+                        </div>
+                        <div class="menu-item-info">
+                            <div class="menu-item-name">${item.name}</div>
+                            <div class="menu-item-description">${item.description}</div>
+                            <div class="menu-item-footer">
+                                <div class="menu-item-price">${item.price} ₽</div>
+                                <button class="add-btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        });
+
+        // Service Worker для PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker зарегистрирован'))
+                    .catch(err => console.log('Ошибка Service Worker:', err));
+            });
+        }
+
+        // Запуск приложения
+        init();
+    </script>
+</body>
+</html>
